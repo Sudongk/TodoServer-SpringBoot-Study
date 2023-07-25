@@ -21,8 +21,13 @@ public class TodosResponse {
         this.pageInfo = pageInfo;
     }
 
-    public static TodosResponse map(final Page<Todo> todoPage) {
+    public static TodosResponse mapTodo(final Page<Todo> todoPage) {
         List<TodoResponse> responses = todoPage.map(TodoResponse::new).getContent();
         return new TodosResponse(responses, PageInfo.of(todoPage));
+    }
+
+    public static TodosResponse mapTodoResponse(final Page<TodoResponse> todoResponsesPage) {
+        List<TodoResponse> responses = todoResponsesPage.getContent();
+        return new TodosResponse(responses, PageInfo.of(todoResponsesPage));
     }
 }

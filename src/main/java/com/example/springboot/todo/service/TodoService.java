@@ -4,9 +4,11 @@ import com.example.springboot.member.domain.entity.Member;
 import com.example.springboot.member.exception.MemberNotFoundException;
 import com.example.springboot.member.repository.MemberRepository;
 import com.example.springboot.todo.domain.entity.Todo;
+import com.example.springboot.todo.dto.request.TodoCondition;
 import com.example.springboot.todo.dto.request.TodoCreateRequest;
 import com.example.springboot.todo.dto.request.TodoUpdateRequest;
 import com.example.springboot.todo.dto.response.TodoCreateResponse;
+import com.example.springboot.todo.dto.response.TodoResponse;
 import com.example.springboot.todo.dto.response.TodosResponse;
 import com.example.springboot.todo.exception.TodoNotFoundException;
 import com.example.springboot.todo.repository.TodoRepository;
@@ -32,18 +34,18 @@ public class TodoService {
     public TodosResponse findTodosContainsContent(String content, Pageable pageable, Boolean isDone) {
         if (isDone == null) {
             Page<Todo> resultTodos = todoRepository.findTodosContainsContent(content, pageable);
-            return TodosResponse.map(resultTodos);
+            return TodosResponse.mapTodo(resultTodos);
         }
 
         Page<Todo> resultTodos = todoRepository.findTodosContainsContentAndIsDone(content, pageable, isDone);
 
-        return TodosResponse.map(resultTodos);
+        return TodosResponse.mapTodo(resultTodos);
     }
 
     public TodosResponse findTodosContainsTitle(String title, Pageable pageable) {
         Page<Todo> resultTodos = todoRepository.findTodosContainsTitle(title, pageable);
 
-        return TodosResponse.map(resultTodos);
+        return TodosResponse.mapTodo(resultTodos);
     }
 
     @Transactional
@@ -94,6 +96,18 @@ public class TodoService {
         todo.isAuthor(memberId);
 
         todo.updateIsDone();
+    }
+
+    public TodosResponse findAllByCondition(TodoCondition todoCondition, Pageable pageable) {
+        Page<Todo> todoPage = todoRepository.findAllByCondition(todoCondition, pageable);
+
+        return TodosResponse.mapTodo(todoPage);
+    }
+
+    public TodosResponse findAllByConditionV2(TodoCondition todoCondition, Pageable pageable) {
+        Page<TodoResponse> todoResponsesPage = todoRepository.findAllByConditionV2(todoCondition, pageable);
+
+        return TodosResponse.mapTodoResponse(todoResponsesPage);
     }
 
     private Member getMemberById(Long memberId) {

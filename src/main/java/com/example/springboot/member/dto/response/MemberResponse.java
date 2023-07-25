@@ -2,6 +2,7 @@ package com.example.springboot.member.dto.response;
 
 import com.example.springboot.member.domain.entity.Member;
 import com.example.springboot.todo.domain.entity.Todo;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class MemberFindResponse {
+public class MemberResponse {
 
     private Long id;
 
@@ -22,7 +23,8 @@ public class MemberFindResponse {
 
     private List<MemberOwnedTodosResponse> todos = new ArrayList<>();
 
-    public MemberFindResponse(final Member member) {
+    @QueryProjection
+    public MemberResponse(final Member member) {
         this.id = member.getId();
         this.email = member.getEmail();
         this.name = member.getName();

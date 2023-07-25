@@ -1,5 +1,6 @@
 package com.example.springboot.member.controller;
 
+import com.example.springboot.ControllerTestConfig;
 import com.example.springboot.member.dto.request.MemberSignUpRequest;
 import com.example.springboot.member.dto.response.MemberSignUpResponse;
 import org.junit.jupiter.api.DisplayName;

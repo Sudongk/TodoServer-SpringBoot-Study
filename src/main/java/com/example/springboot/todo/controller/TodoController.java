@@ -3,6 +3,7 @@ package com.example.springboot.todo.controller;
 import com.example.springboot.common.aop.CheckAuth;
 import com.example.springboot.common.aop.MemberId;
 import com.example.springboot.like.service.LikeService;
+import com.example.springboot.todo.dto.request.TodoCondition;
 import com.example.springboot.todo.dto.request.TodoCreateRequest;
 import com.example.springboot.todo.dto.request.TodoUpdateRequest;
 import com.example.springboot.todo.dto.response.TodoCreateResponse;
@@ -47,6 +48,28 @@ public class TodoController {
             @RequestParam(value = "size", defaultValue = "20") int size) {
 
         TodosResponse todosResponse = todoService.findTodosContainsTitle(title, PageRequest.of(page, size));
+
+        return ResponseEntity.ok(todosResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<TodosResponse> findAllByCondition(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size,
+            @RequestBody TodoCondition todoCondition) {
+
+        TodosResponse todosResponse = todoService.findAllByCondition(todoCondition, PageRequest.of(page, size));
+
+        return ResponseEntity.ok(todosResponse);
+    }
+
+    @GetMapping("/v2")
+    public ResponseEntity<TodosResponse> findAllByConditionV2(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size,
+            @RequestBody TodoCondition todoCondition) {
+
+        TodosResponse todosResponse = todoService.findAllByConditionV2(todoCondition, PageRequest.of(page, size));
 
         return ResponseEntity.ok(todosResponse);
     }

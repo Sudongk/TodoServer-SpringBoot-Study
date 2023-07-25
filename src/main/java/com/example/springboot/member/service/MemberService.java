@@ -3,9 +3,11 @@ package com.example.springboot.member.service;
 import com.example.springboot.common.jwt.JwtProvider;
 import com.example.springboot.member.domain.entity.Member;
 import com.example.springboot.member.domain.entity.MemberLogin;
+import com.example.springboot.member.dto.request.MemberCondition;
 import com.example.springboot.member.dto.request.MemberLoginRequest;
 import com.example.springboot.member.dto.request.MemberSignUpRequest;
 import com.example.springboot.member.dto.response.MemberLoginResponse;
+import com.example.springboot.member.dto.response.MemberResponse;
 import com.example.springboot.member.dto.response.MemberSignUpResponse;
 import com.example.springboot.member.dto.response.MembersResponse;
 import com.example.springboot.member.exception.DuplicateEmailException;
@@ -64,7 +66,13 @@ public class MemberService {
 
     public MembersResponse findAllMember(Pageable pageable) {
         Page<Member> allMember = memberRepository.findAllMembersWithTodosAndLikes(pageable);
-        return MembersResponse.map(allMember);
+        return MembersResponse.mapMember(allMember);
+    }
+
+    public MembersResponse findAllMemberByCondition(MemberCondition memberCondition, Long memberId, Pageable pageable) {
+        Page<MemberResponse> memberResponsePage = memberRepository.findAllMemberByCondition(memberCondition, memberId, pageable);
+
+        return MembersResponse.mapMemberResponse(memberResponsePage);
     }
 
     private void deleteExistingMemberLogin(Member member) {

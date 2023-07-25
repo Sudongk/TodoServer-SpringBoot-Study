@@ -1,6 +1,7 @@
-package com.example.springboot.member.controller;
+package com.example.springboot;
 
 import com.example.springboot.like.service.LikeService;
+import com.example.springboot.member.controller.MemberController;
 import com.example.springboot.member.service.MemberService;
 import com.example.springboot.todo.controller.TodoController;
 import com.example.springboot.todo.service.TodoService;

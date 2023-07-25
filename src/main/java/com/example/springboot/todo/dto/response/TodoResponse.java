@@ -2,6 +2,7 @@ package com.example.springboot.todo.dto.response;
 
 import com.example.springboot.member.domain.entity.Member;
 import com.example.springboot.todo.domain.entity.Todo;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,7 @@ public class TodoResponse {
 
     private String memberName;
 
+    @QueryProjection
     public TodoResponse(final Todo todo) {
         Member member = todo.getMember();
         this.id = todo.getId();

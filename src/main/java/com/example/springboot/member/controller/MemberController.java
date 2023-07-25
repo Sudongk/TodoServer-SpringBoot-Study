@@ -1,5 +1,8 @@
 package com.example.springboot.member.controller;
 
+import com.example.springboot.common.aop.CheckAuth;
+import com.example.springboot.common.aop.MemberId;
+import com.example.springboot.member.dto.request.MemberCondition;
 import com.example.springboot.member.dto.request.MemberLoginRequest;
 import com.example.springboot.member.dto.request.MemberSignUpRequest;
 import com.example.springboot.member.dto.response.MemberLoginResponse;
@@ -57,6 +60,22 @@ public class MemberController {
             @RequestParam(value = "size", required = false, defaultValue = "20") int size) {
 
         MembersResponse membersResponse = memberService.findAllMember(PageRequest.of(page, size));
+
+        return ResponseEntity
+                .ok()
+                .body(membersResponse);
+    }
+
+    // 자기 자신 재외
+    @CheckAuth
+    @GetMapping("/v2")
+    public ResponseEntity<MembersResponse> findAllMemberByCondition(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size,
+            @RequestBody MemberCondition memberCondition,
+            @MemberId Long memberId) {
+
+        MembersResponse membersResponse = memberService.findAllMemberByCondition(memberCondition, memberId, PageRequest.of(page, size));
 
         return ResponseEntity
                 .ok()

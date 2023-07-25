@@ -12,18 +12,23 @@ import java.util.List;
 @NoArgsConstructor
 public class MembersResponse {
 
-    private List<MemberFindResponse> members;
+    private List<MemberResponse> members;
 
     PageInfo pageInfo;
 
-    private MembersResponse(List<MemberFindResponse> members, PageInfo pageInfo) {
+    private MembersResponse(List<MemberResponse> members, PageInfo pageInfo) {
         this.members = members;
         this.pageInfo = pageInfo;
     }
 
-    public static MembersResponse map(final Page<Member> memberPage) {
-        List<MemberFindResponse> responses = memberPage.map(MemberFindResponse::new).getContent();
+    public static MembersResponse mapMember(final Page<Member> memberPage) {
+        List<MemberResponse> responses = memberPage.map(MemberResponse::new).getContent();
         return new MembersResponse(responses, PageInfo.of(memberPage));
+    }
+
+    public static MembersResponse mapMemberResponse(final Page<MemberResponse> memberResponsePage) {
+        List<MemberResponse> responses = memberResponsePage.getContent();
+        return new MembersResponse(responses, PageInfo.of(memberResponsePage));
     }
 
 }
