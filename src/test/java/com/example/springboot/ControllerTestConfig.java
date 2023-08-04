@@ -1,5 +1,6 @@
 package com.example.springboot;
 
+import com.example.springboot.common.jwt.JwtProvider;
 import com.example.springboot.like.service.LikeService;
 import com.example.springboot.member.controller.MemberController;
 import com.example.springboot.member.service.MemberService;
@@ -40,4 +41,6 @@ public abstract class ControllerTestConfig {
     @MockBean
     protected JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
+    @MockBean
+    protected JwtProvider jwtProvider;
 }

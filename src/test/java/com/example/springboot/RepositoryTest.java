@@ -7,7 +7,6 @@ import com.example.springboot.member.domain.entity.Member;
 import com.example.springboot.member.repository.MemberRepository;
 import com.example.springboot.todo.domain.entity.Todo;
 import com.example.springboot.todo.repository.TodoRepository;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

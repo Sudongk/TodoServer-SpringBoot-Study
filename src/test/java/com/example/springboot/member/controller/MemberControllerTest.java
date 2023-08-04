@@ -62,5 +62,195 @@ class MemberControllerTest extends ControllerTestConfig {
                     assertThat(actualResponse).isEqualTo(memberSignUpResponse);
                 });
 
+        then(memberService).should().saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 이메일 형식이 잘못된 경우")
+    @Test
+    void memberJoinFailWhenInvalidEmail() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa@", "password", "name", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("Email")))
+                .andExpect(jsonPath("$.message", equalTo("email : INVALID EMAIL! (request value: aa@)")))
+                ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 이메일이 공백이거나 null인 경우")
+    @Test
+    void memberJoinFailWhenEmailIsEmpty() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("", "password", "name", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("NotBlank")))
+                .andExpect(jsonPath("$.message", equalTo("email : EMPTY! (request value: )")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 비밀번호가 공백이거나 null인 경우")
+    @Test
+    void memberJoinFailWhenPasswordIsEmpty() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa88sd@naver.com", "", "name", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("NotBlank")))
+                .andExpect(jsonPath("$.message", equalTo("password : EMPTY! (request value: )")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 비밀번호가 너무 긴 경우")
+    @Test
+    void memberJoinFailWhenPasswordIsTooLong() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa88sd@naver.com", "12345678910", "name", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("Size")))
+                .andExpect(jsonPath("$.message", equalTo("password : TOO LONG PASSWORD! (request value: 12345678910)")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 이름이 공백인 경우")
+    @Test
+    void memberJoinFailWhenNameIsEmpty() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa88sd@naver.com", "password", "", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("NotBlank")))
+                .andExpect(jsonPath("$.message", equalTo("name : INVALID EMAIL! (request value: )")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 이름이 너무 긴 경우")
+    @Test
+    void memberJoinFailWhenNameIsTooLong() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa88sd@naver.com", "password", "namenamename", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("Size")))
+                .andExpect(jsonPath("$.message", equalTo("name : TOO LONG NAME! (request value: namenamename)")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 나이가 공백인 경우")
+    @Test
+    void memberJoinFailWhenAgeIsEmpty() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa88sd@naver.com", "password", "name", "20");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("Size")))
+                .andExpect(jsonPath("$.message", equalTo("name : TOO LONG NAME! (request value: namenamename)")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
     }
 }
