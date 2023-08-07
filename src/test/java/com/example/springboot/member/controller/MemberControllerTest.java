@@ -232,7 +232,7 @@ class MemberControllerTest extends ControllerTestConfig {
     void memberJoinFailWhenAgeIsEmpty() throws Exception {
         // given
         MemberSignUpRequest memberSignUpRequest =
-                new MemberSignUpRequest("aa88sd@naver.com", "password", "name", "20");
+                new MemberSignUpRequest("aa88sd@naver.com", "password", "name", "");
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -247,8 +247,35 @@ class MemberControllerTest extends ControllerTestConfig {
         resultActions
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode", equalTo("Size")))
-                .andExpect(jsonPath("$.message", equalTo("name : TOO LONG NAME! (request value: namenamename)")))
+                .andExpect(jsonPath("$.errorCode", equalTo("Pattern")))
+                .andExpect(jsonPath("$.message", equalTo("age : INVALID AGE! (request value: )")))
+        ;
+
+        then(memberService).should(never()).saveMember(any());
+    }
+
+    @DisplayName("회원 가입 실패 - 나이 형식에 맞지 않는 경우(숫자가 아니거나 2자리 초과인 경우)")
+    @Test
+    void memberJoinFailWhenAgeIsInvalid() throws Exception {
+        // given
+        MemberSignUpRequest memberSignUpRequest =
+                new MemberSignUpRequest("aa88sd@naver.com", "password", "name", "112233");
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/signup")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberSignUpRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode", equalTo("Pattern")))
+                .andExpect(jsonPath("$.message", equalTo("age : INVALID AGE! (request value: 112233)")))
         ;
 
         then(memberService).should(never()).saveMember(any());
