@@ -1,7 +1,9 @@
 package com.example.springboot.member.controller;
 
 import com.example.springboot.ControllerTestConfig;
+import com.example.springboot.member.dto.request.MemberLoginRequest;
 import com.example.springboot.member.dto.request.MemberSignUpRequest;
+import com.example.springboot.member.dto.response.MemberLoginResponse;
 import com.example.springboot.member.dto.response.MemberSignUpResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,14 +17,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 class MemberControllerTest extends ControllerTestConfig {
 
     private final Long memberId = 1L;
     private final String email = "aaa@aaa.com";
-    private final String password = "12345";
-    private final String name = "aaa";
+    private final String password = "password";
+    private final String name = "name";
     private final String age = "20";
+    private final String token = "token";
 
     private MemberSignUpRequest getMemberSignUpRequest() {
         return new MemberSignUpRequest(email, password, name, age);
@@ -30,6 +32,14 @@ class MemberControllerTest extends ControllerTestConfig {
 
     private MemberSignUpResponse getMemberSignUpResponse() {
         return new MemberSignUpResponse(memberId);
+    }
+
+    private MemberLoginRequest getMemberLoginRequest() {
+        return new MemberLoginRequest(email, password);
+    }
+
+    private MemberLoginResponse getMemberLoginResponse() {
+        return new MemberLoginResponse(memberId, name, Integer.parseInt(age), token);
     }
 
     @DisplayName("회원 가입 성공 - 가입된 회원의 pk값 반환")
@@ -87,7 +97,7 @@ class MemberControllerTest extends ControllerTestConfig {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode", equalTo("Email")))
                 .andExpect(jsonPath("$.message", equalTo("email : INVALID EMAIL! (request value: aa@)")))
-                ;
+        ;
 
         then(memberService).should(never()).saveMember(any());
     }
@@ -280,4 +290,39 @@ class MemberControllerTest extends ControllerTestConfig {
 
         then(memberService).should(never()).saveMember(any());
     }
+
+    @Test
+    @DisplayName("로그인 성공")
+    void loginSuccess() throws Exception {
+        // given
+        MemberLoginRequest memberLoginRequest = getMemberLoginRequest();
+
+        MemberLoginResponse memberLoginResponse = getMemberLoginResponse();
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/v1/members/login")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(memberLoginRequest))
+                        .characterEncoding("UTF-8")
+        );
+
+        // then
+        resultActions
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", equalTo(memberId.intValue())))
+                .andExpect(jsonPath("$.name", equalTo(name)))
+                .andExpect(jsonPath("$.age", equalTo(age)))
+                .andExpect(jsonPath("$.token", equalTo(token)))
+                .andExpect(result -> {
+                    String content = result.getResponse().getContentAsString();
+                    MemberLoginResponse actualResponse = objectMapper.readValue(content, MemberLoginResponse.class);
+                    assertThat(actualResponse).isEqualTo(memberLoginResponse);
+                });
+
+        then(memberService).should().loginMember(any());
+    }
 }
+

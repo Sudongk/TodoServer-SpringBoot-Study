@@ -16,7 +16,7 @@ public class MemberLoginResponse {
 
     private String token;
 
-    private MemberLoginResponse(final Long id, final String name, final int age, final String token) {
+    public MemberLoginResponse(final Long id, final String name, final int age, final String token) {
         this.id = id;
         this.name = name;
         this.age = age;
