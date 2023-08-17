@@ -19,27 +19,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class MemberControllerTest extends ControllerTestConfig {
 
-    private final Long memberId = 1L;
-    private final String email = "aaa@aaa.com";
-    private final String password = "password";
-    private final String name = "name";
-    private final int age = 20;
-    private final String token = "token";
+    private static final Long MEMBER_ID = 1L;
+    private static final String EMAIL = "aaa@aaa.com";
+    private static final String PASSWORD = "password";
+    private static final String NAME = "name";
+    private static final int AGE = 20;
+    private static final String TOKEN = "token";
 
     private MemberSignUpRequest getMemberSignUpRequest() {
-        return new MemberSignUpRequest(email, password, name, String.valueOf(age));
+        return new MemberSignUpRequest(EMAIL, PASSWORD, NAME, String.valueOf(AGE));
     }
 
     private MemberSignUpResponse getMemberSignUpResponse() {
-        return new MemberSignUpResponse(memberId);
+        return new MemberSignUpResponse(MEMBER_ID);
     }
 
     private MemberLoginRequest getMemberLoginRequest() {
-        return new MemberLoginRequest(email, password);
+        return new MemberLoginRequest(EMAIL, PASSWORD);
     }
 
     private MemberLoginResponse getMemberLoginResponse() {
-        return new MemberLoginResponse(memberId, name, age, token);
+        return new MemberLoginResponse(MEMBER_ID, NAME, AGE, TOKEN);
     }
 
     @DisplayName("회원 가입 성공 - 가입된 회원의 pk값 반환")
@@ -65,7 +65,7 @@ class MemberControllerTest extends ControllerTestConfig {
         resultActions
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", equalTo(memberId.intValue())))
+                .andExpect(jsonPath("$.id", equalTo(MEMBER_ID.intValue())))
                 .andExpect(result -> {
                     String content = result.getResponse().getContentAsString();
                     MemberSignUpResponse actualResponse = objectMapper.readValue(content, MemberSignUpResponse.class);
@@ -303,7 +303,7 @@ class MemberControllerTest extends ControllerTestConfig {
                 .willReturn(memberLoginResponse);
 
         given(jwtProvider.generateToken(any()))
-                .willReturn(token);
+                .willReturn(TOKEN);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -318,10 +318,10 @@ class MemberControllerTest extends ControllerTestConfig {
         resultActions
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", equalTo(memberId.intValue())))
-                .andExpect(jsonPath("$.name", equalTo(name)))
-                .andExpect(jsonPath("$.age", equalTo(age)))
-                .andExpect(jsonPath("$.token", equalTo(token)))
+                .andExpect(jsonPath("$.id", equalTo(MEMBER_ID.intValue())))
+                .andExpect(jsonPath("$.name", equalTo(NAME)))
+                .andExpect(jsonPath("$.age", equalTo(AGE)))
+                .andExpect(jsonPath("$.token", equalTo(TOKEN)))
                 .andExpect(result -> {
                     String content = result.getResponse().getContentAsString();
                     MemberLoginResponse actualResponse = objectMapper.readValue(content, MemberLoginResponse.class);
@@ -335,7 +335,7 @@ class MemberControllerTest extends ControllerTestConfig {
     @DisplayName("로그인 실패 - 이메일이 공백인 경우")
     void loginFailWhenEmailIsEmpty() throws Exception {
         // given
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest("", password);
+        MemberLoginRequest memberLoginRequest = new MemberLoginRequest("", PASSWORD);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -383,7 +383,7 @@ class MemberControllerTest extends ControllerTestConfig {
     @DisplayName("로그인 실패 - 이메일 형식이 잘못된 경우")
     void loginFailWhenEmailIsInValid() throws Exception {
         // given
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest("aa@", password);
+        MemberLoginRequest memberLoginRequest = new MemberLoginRequest("aa@", PASSWORD);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -407,7 +407,7 @@ class MemberControllerTest extends ControllerTestConfig {
     @DisplayName("로그인 실패 - 비밀번호가 공백인 경우")
     void loginFailWhenPasswordIsEmpty() throws Exception {
         // given
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(email, "");
+        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(EMAIL, "");
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -431,7 +431,7 @@ class MemberControllerTest extends ControllerTestConfig {
     @DisplayName("로그인 실패 - 비밀번호가 null인 경우")
     void loginFailWhenPasswordIsNull() throws Exception {
         // given
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(email, null);
+        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(EMAIL, null);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -455,7 +455,7 @@ class MemberControllerTest extends ControllerTestConfig {
     @DisplayName("로그인 실패 - 비밀번호 길이가 너무 긴 경우")
     void loginFailWhenPasswordIsTooLong() throws Exception {
         // given
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(email, "passwordpasswordpasswordpassword");
+        MemberLoginRequest memberLoginRequest = new MemberLoginRequest(EMAIL, "passwordpasswordpasswordpassword");
 
         // when
         ResultActions resultActions = mockMvc.perform(
